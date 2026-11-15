@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="format-detection" content="telephone=no">
 <title>Магазин</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;600;700&display=swap">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 :root{
@@ -279,6 +282,23 @@ section.cat h2{font-size:24px;letter-spacing:-.6px}
 .fld input,.fld textarea{color:var(--text)}
 .top h1{font-size:28px;font-weight:800;letter-spacing:-.8px}
 .cap{font-family:var(--mono);letter-spacing:2px;font-size:11.5px}
+
+/* ================= ШРИФТЫ: Unbounded — заголовки и цены, Manrope — текст ================= */
+html,body,button,input,textarea{font-family:Manrope,"SF Pro Display",-apple-system,"Segoe UI",Roboto,system-ui,sans-serif}
+.hero h1,section.cat h2,.top h1,.sheet h3,.empty h2,.toprow .nm2,.pr-row,.sheet .pr,.sum .tot,.fact b{
+  font-family:Unbounded,Manrope,system-ui,sans-serif;font-feature-settings:normal}
+.hero h1{font-size:27px;font-weight:700;letter-spacing:-.6px;line-height:1.15}
+.toprow .nm2{font-size:18px;font-weight:600;letter-spacing:-.3px}
+section.cat h2{font-size:20px;font-weight:600;letter-spacing:-.4px}
+.top h1{font-size:22px;font-weight:600;letter-spacing:-.4px}
+.sheet h3{font-size:19px;font-weight:600;letter-spacing:-.3px;line-height:1.25}
+.empty h2{font-size:20px;font-weight:600}
+.fact b{font-size:14px;font-weight:600;letter-spacing:-.2px}
+.pr-row{font-size:16px;font-weight:600}
+.sheet .pr{font-size:20px;font-weight:600}
+.sum .tot{font-size:16px;font-weight:600}
+.nm{font-weight:700;letter-spacing:-.1px}
+.chip,.add,.big,.slot,.seg button,.bar button{font-weight:700}
 </style>
 </head>
 <body>
