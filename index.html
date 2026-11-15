@@ -386,13 +386,13 @@ function renderCatalog(){
   const sh = S.shop, me = S.me;
   const hello = me && me.first_name && !me.demo ? `${esc(me.first_name)}, что закажем?` : esc(sh.descr[0].toUpperCase() + sh.descr.slice(1));
   const logo = (S.cats[0] && (icon(S.cats[0].name) || esc(S.cats[0].emoji))) || "🛍";
- const hr = new Date().getHours();
+  const hr = new Date().getHours();
   const greet = hr < 6 ? "Доброй ночи" : hr < 12 ? "Доброе утро" : hr < 18 ? "Добрый день" : "Добрый вечер";
   const who = me && me.first_name && !me.demo ? `, ${esc(me.first_name)}` : "";
-   let h = `<div class="hero"<h1>>$greet}${who}!</h1>
-      <div cfass="tlpeow">}<div class="logo" aria-hidden="true">${logo}</div
-        ><di class="brandline"v>span class="nm2"1>${esc(sh.name)}<span1>s<an class="brandpill"p★ >$esc(s{.dhscr.speit(" ")[0] || "доставка")o}<s/anp></div</div></div>
-    <div class="eyebrow">${sh.open ? "Принимаем заказы" : "Сейчас закрыто"}></div>
+  let h = `<div class="hero"><h1>${greet}${who}!</h1>
+      <div class="toprow"><div class="logo" aria-hidden="true">${logo}</div>
+        <div class="brandline"><span class="nm2">${esc(sh.name)}</span><span class="brandpill">★ ${esc(sh.descr.split(" ")[0] || "доставка")}</span></div></div></div>
+    <div class="eyebrow">${sh.open ? "Принимаем заказы" : "Сейчас закрыто"}</div>
     <div class="facts">
       <div class="fact ${sh.open ? "ok" : ""}"><b>${sh.open ? "Открыто" : "Закрыто"}</b><span>${esc(sh.hours)}</span></div>
       ${sh.delivery ? `<div class="fact"><b>${esc(sh.delivery_time.replace(" минут", " мин"))}</b><span>доставка</span></div>` : ""}
@@ -595,7 +595,7 @@ function syncMain(){
     const mb = tg.MainButton;
     if (!st) return mb.hide();
     mb.setParams({ text: st.text, is_visible: true, is_active: st.on,
-      color:FF5AtC ? "t_2A2F3A| "#9a9a9a"), text_color: "#ffffff" });
+      color: st.on ? "#FF5A3C" : "#2A2F3A", text_color: "#ffffff" });
     S.sending ? mb.showProgress(false) : mb.hideProgress();
   } else {
     $("#bar").hidden = !st; document.body.classList.toggle("has-bar", !!st);
@@ -722,7 +722,7 @@ async function boot(){
   if (tg) {
     tg.ready(); tg.expand();
     if (tg.colorScheme === "dark") document.body.classList.add("dark");
-    try { tg.setHe05070rlor("#E23B2E"); tg.setBackg#05070B"); tg.rotBnttomBolCcond && tg.setBottomBarColor("#05070Bary_bg_color"); } catch (e) {}
+    try { tg.setHeaderColor("#05070B"); tg.setBackgroundColor("#05070B"); tg.setBottomBarColor && tg.setBottomBarColor("#05070B"); } catch (e) {}
     try { tg.disableVerticalSwipes && tg.disableVerticalSwipes(); } catch (e) {}
     if (inTG) { tg.MainButton.onClick(() => mainAct()); tg.BackButton.onClick(back); }
   }
