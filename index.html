@@ -200,6 +200,83 @@ section.cat h2{margin:16px 2px 8px;font-size:22px;font-weight:800;letter-spacing
 .skel{height:100vh;display:grid;place-items:center;color:var(--hint)}
 .spin{width:28px;height:28px;border-radius:50%;border:3px solid var(--sep);border-top-color:var(--accent);animation:sp 0.8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
+
+/* ================= НОЧНАЯ ТЕМА (в стиле премиальных приложений) ================= */
+:root{
+  --bg:#05070B; --card:#0B0E14; --text:#F2F4F8; --hint:#7D8594;
+  --accent:#FF5A3C; --accent2:#FF9A3C; --accent-text:#fff;
+  --sep:rgba(255,255,255,.07); --soft:rgba(255,90,60,.12); --line:rgba(255,255,255,.08);
+  --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  --plate-1:#1C1510; --plate-2:#0F1A16; --plate-3:#0E1620; --plate-4:#1C1016; --plate-5:#15111F;
+  --r:26px;
+}
+html,body{background:var(--bg);color:var(--text);
+  font-family:"SF Pro Display",-apple-system,"Segoe UI Variable Display","Segoe UI",Roboto,system-ui,sans-serif}
+/* фон: мягкое свечение + звёздная пыль */
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(60vw 40vh at 85% -5%, rgba(255,90,60,.16), transparent 70%),
+    radial-gradient(70vw 50vh at -10% 35%, rgba(90,60,255,.10), transparent 70%),
+    radial-gradient(60vw 40vh at 110% 85%, rgba(0,190,255,.07), transparent 70%),
+    var(--bg)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,.55), transparent 60%),
+    radial-gradient(1px 1px at 72% 9%, rgba(255,255,255,.4), transparent 60%),
+    radial-gradient(1.5px 1.5px at 38% 46%, rgba(255,140,100,.5), transparent 60%),
+    radial-gradient(1px 1px at 88% 52%, rgba(255,255,255,.35), transparent 60%),
+    radial-gradient(1px 1px at 22% 74%, rgba(160,140,255,.5), transparent 60%),
+    radial-gradient(1.5px 1.5px at 62% 88%, rgba(255,255,255,.35), transparent 60%),
+    radial-gradient(1px 1px at 52% 28%, rgba(120,220,255,.45), transparent 60%);
+  animation:twinkle 7s ease-in-out infinite alternate}
+@keyframes twinkle{from{opacity:.3}to{opacity:.7}}
+
+/* шапка: без красной плашки — приветствие крупно, бренд в «пилюле» */
+.hero{background:none;border-radius:0;padding:30px 20px 18px;align-items:flex-start;flex-direction:column;gap:12px}
+.hero .floaters{display:none}
+.hero h1{font-size:34px;line-height:1.08;letter-spacing:-1px;font-weight:800;color:var(--text)}
+.hero p{display:none}
+.brandline{display:flex;align-items:center;gap:10px;color:var(--hint);font-size:18px}
+.brandpill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:15px;font-weight:600;
+  color:var(--accent2);background:rgba(255,120,60,.08);border:1px solid rgba(255,120,60,.35)}
+.logo{width:52px;height:52px;background:radial-gradient(circle at 35% 35%, #1b1f28, #07090d);border:1px solid var(--line);
+  box-shadow:0 0 0 1px rgba(255,90,60,.15),0 0 28px rgba(255,90,60,.25)}
+.logo .ico{color:var(--accent)}
+.toprow{display:flex;align-items:center;gap:12px}
+.toprow .nm2{font-size:22px;font-weight:600;letter-spacing:-.3px}
+
+/* карточки: стекло, тонкая рамка, большой радиус */
+.facts,.grid,.box,.repeat,.seg{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012)),var(--card);
+  border:1px solid var(--line);box-shadow:0 10px 40px rgba(0,0,0,.35)}
+.facts{margin:6px 16px 0;padding:6px}
+.fact{padding:12px 14px}
+.fact b{font-size:17px}
+.fact span,.ds,.li .t span,.opt .t span,.fld label,.legal,.note{font-family:var(--mono);letter-spacing:-.2px}
+.fact span{font-size:11.5px}
+.fact.ok b{color:#4BE3A0}
+.fact.ok b::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#4BE3A0;margin-right:7px;
+  box-shadow:0 0 10px #4BE3A0;vertical-align:2px}
+.eyebrow{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12.5px;font-weight:700;letter-spacing:2.5px;
+  color:var(--accent2);text-transform:uppercase;margin:18px 22px 0}
+.eyebrow::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent)}
+section.cat h2{font-size:24px;letter-spacing:-.6px}
+.chips{background:color-mix(in srgb,var(--bg) 82%,transparent)}
+.chip{background:rgba(255,255,255,.04);border:1px solid var(--line);color:var(--text)}
+.chip.on{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;box-shadow:0 0 22px rgba(255,90,60,.35)}
+.ph{box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),0 0 30px rgba(255,90,60,.06)}
+.add{background:rgba(255,90,60,.1);border:1px solid rgba(255,90,60,.35);color:#FF7A5C}
+.step,.big,.slot.on,.seg button.on,.bar button{background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 6px 24px rgba(255,90,60,.35)}
+.pr-row{font-size:18px}
+.hit{background:rgba(255,154,60,.12);color:var(--accent2);border:1px solid rgba(255,154,60,.3);font-family:var(--mono);font-size:10.5px;letter-spacing:.5px}
+.badge{box-shadow:0 0 12px rgba(255,90,60,.6)}
+.slot{background:rgba(255,255,255,.04);border:1px solid var(--line)}
+.sheet{background:#0B0E14;border-top:1px solid var(--line)}
+.prog{background:rgba(255,255,255,.06)}
+.prog i{background:linear-gradient(90deg,var(--accent),var(--accent2));box-shadow:0 0 12px rgba(255,90,60,.6)}
+.toast{background:rgba(20,24,32,.95);border:1px solid var(--line)}
+.fld input,.fld textarea{color:var(--text)}
+.top h1{font-size:28px;font-weight:800;letter-spacing:-.8px}
+.cap{font-family:var(--mono);letter-spacing:2px;font-size:11.5px}
 </style>
 </head>
 <body>
@@ -309,7 +386,13 @@ function renderCatalog(){
   const sh = S.shop, me = S.me;
   const hello = me && me.first_name && !me.demo ? `${esc(me.first_name)}, что закажем?` : esc(sh.descr[0].toUpperCase() + sh.descr.slice(1));
   const logo = (S.cats[0] && (icon(S.cats[0].name) || esc(S.cats[0].emoji))) || "🛍";
-  let h = `<div class="hero">${floaters()}<div class="logo" aria-hidden="true">${logo}</div><div><h1>${esc(sh.name)}</h1><p>${hello}</p></div></div>
+ const hr = new Date().getHours();
+  const greet = hr < 6 ? "Доброй ночи" : hr < 12 ? "Доброе утро" : hr < 18 ? "Добрый день" : "Добрый вечер";
+  const who = me && me.first_name && !me.demo ? `, ${esc(me.first_name)}` : "";
+   let h = `<div class="hero"<h1>>$greet}${who}!</h1>
+      <div cfass="tlpeow">}<div class="logo" aria-hidden="true">${logo}</div
+        ><di class="brandline"v>span class="nm2"1>${esc(sh.name)}<span1>s<an class="brandpill"p★ >$esc(s{.dhscr.speit(" ")[0] || "доставка")o}<s/anp></div</div></div>
+    <div class="eyebrow">${sh.open ? "Принимаем заказы" : "Сейчас закрыто"}></div>
     <div class="facts">
       <div class="fact ${sh.open ? "ok" : ""}"><b>${sh.open ? "Открыто" : "Закрыто"}</b><span>${esc(sh.hours)}</span></div>
       ${sh.delivery ? `<div class="fact"><b>${esc(sh.delivery_time.replace(" минут", " мин"))}</b><span>доставка</span></div>` : ""}
@@ -512,7 +595,7 @@ function syncMain(){
     const mb = tg.MainButton;
     if (!st) return mb.hide();
     mb.setParams({ text: st.text, is_visible: true, is_active: st.on,
-      color: st.on ? "#E23B2E" : (tg.themeParams.hint_color || "#9a9a9a"), text_color: "#ffffff" });
+      color:FF5AtC ? "t_2A2F3A| "#9a9a9a"), text_color: "#ffffff" });
     S.sending ? mb.showProgress(false) : mb.hideProgress();
   } else {
     $("#bar").hidden = !st; document.body.classList.toggle("has-bar", !!st);
@@ -639,7 +722,7 @@ async function boot(){
   if (tg) {
     tg.ready(); tg.expand();
     if (tg.colorScheme === "dark") document.body.classList.add("dark");
-    try { tg.setHeaderColor("#E23B2E"); tg.setBackgroundColor("secondary_bg_color"); } catch (e) {}
+    try { tg.setHe05070rlor("#E23B2E"); tg.setBackg#05070B"); tg.rotBnttomBolCcond && tg.setBottomBarColor("#05070Bary_bg_color"); } catch (e) {}
     try { tg.disableVerticalSwipes && tg.disableVerticalSwipes(); } catch (e) {}
     if (inTG) { tg.MainButton.onClick(() => mainAct()); tg.BackButton.onClick(back); }
   }
