@@ -128,7 +128,8 @@ section.cat h2{margin:16px 2px 8px;font-size:22px;font-weight:800;letter-spacing
 .sheet.on{transform:none;visibility:visible;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
 .sheet .ph{width:min(270px,72vw);height:min(270px,72vw);margin:34px auto 6px;font-size:110px}
 .sheet .hero-plate{background:color-mix(in srgb,var(--plate-1) 35%,var(--card));}
-.sheet .grab{position:absolute;top:8px;left:50%;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--sep);z-index:2}
+.sheet .grab{position:absolute;top:8px;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:3px;background:rgba(255,255,255,.25);z-index:2;cursor:grab}
+.sheet{overscroll-behavior:contain;touch-action:pan-y}
 .sheet .x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:var(--sep);color:var(--text);font-size:18px;z-index:2}
 .sheet .in{padding:16px}
 .sheet h3{margin:0;font-size:22px;letter-spacing:-.3px}
@@ -471,7 +472,14 @@ function watchChips(){
 }
 function patchCards(){ // точечно обновляем карточки, чтобы не дёргалась прокрутка
   document.querySelectorAll("#v-catalog .card").forEach(el => {
-    const p = byId(+el.dataset.id); if (p) el.outerHTML = cardHTML(p);
+    const p = byId(+el.dataset.id); if (!p) return;
+    // меняем только текст, кнопку и значок количества — фото и видео не трогаем, чтобы не дёргались
+    const tmp = document.createElement("div"); tmp.innerHTML = cardHTML(p);
+    const fresh = tmp.firstElementChild, ph = el.querySelector(".ph");
+    el.querySelector(".cb").replaceWith(fresh.querySelector(".cb"));
+    const oldB = el.querySelector(".badge"), newB = fresh.querySelector(".badge");
+    if (oldB) oldB.remove();
+    if (newB && ph) ph.appendChild(newB);
   });
   watchVideos();
 }
@@ -486,16 +494,52 @@ function openSheet(id){
 }
 function renderSheet(){
   const p = byId(S.sheetId); if (!p) return;
-  const q = qty(p.id);
-  $("#sheet").innerHTML = `<span class="grab"></span><button class="x" data-act="close" aria-label="Закрыть">✕</button>
+  const q = qty(p.id), sh = $("#sheet");
+  const row = `<span class="pr">${rub(p.price)}</span>
+    ${q ? stepper(p) : `<button class="big" data-act="inc" data-id="${p.id}">В корзину</button>`}`;
+  if (sh.dataset.id === String(p.id) && sh.querySelector(".row")) { // тот же товар: обновляем только кнопки, видео играет дальше
+    sh.querySelector(".row").innerHTML = row;
+    return;
+  }
+  sh.dataset.id = p.id;
+  sh.innerHTML = `<span class="grab"></span><button class="x" data-act="close" aria-label="Закрыть">✕</button>
     ${thumb(p, "ph", true)}</div><div class="in"><h3>${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</h3><p>${esc(p.descr)}</p>
-    <div class="row"><span class="pr">${rub(p.price)}</span>
-    ${q ? stepper(p) : `<button class="big" data-act="inc" data-id="${p.id}">В корзину</button>`}</div></div>`;
+    <div class="row">${row}</div></div>`;
   watchVideos();
 }
 function closeSheet(){
-  S.sheetId = null; $("#shade").classList.remove("on"); $("#sheet").classList.remove("on"); syncNav();
+  S.sheetId = null; $("#sheet").dataset.id = ""; $("#shade").classList.remove("on"); $("#sheet").classList.remove("on"); syncNav();
 }
+/* окно товара смахивается пальцем вниз */
+(function swipeSheet(){
+  const sh = $("#sheet"), shade = $("#shade");
+  let y0 = null, dy = 0, t0 = 0, drag = false;
+  const start = y => { if (!S.sheetId || sh.scrollTop > 0) return; y0 = y; dy = 0; t0 = Date.now(); drag = false; };
+  const move = (y, e) => {
+    if (y0 === null) return;
+    dy = Math.max(0, y - y0);
+    if (!drag && dy > 6) { drag = true; sh.style.transition = "none"; shade.style.transition = "none"; }
+    if (drag) {
+      if (e && e.cancelable) e.preventDefault();
+      sh.style.transform = `translateY(${dy}px)`;
+      shade.style.opacity = String(Math.max(0, 1 - dy / 400));
+    }
+  };
+  const end = () => {
+    if (y0 === null) return;
+    const fast = dy / Math.max(1, Date.now() - t0) > 0.6;
+    sh.style.transition = ""; shade.style.transition = ""; shade.style.opacity = "";
+    if (drag && (dy > 110 || (fast && dy > 30))) { sh.style.transform = ""; closeSheet(); haptic("impactOccurred", "light"); }
+    else sh.style.transform = "";
+    y0 = null; drag = false;
+  };
+  sh.addEventListener("touchstart", e => start(e.touches[0].clientY), {passive:true});
+  sh.addEventListener("touchmove", e => move(e.touches[0].clientY, e), {passive:false});
+  sh.addEventListener("touchend", end); sh.addEventListener("touchcancel", end);
+  sh.addEventListener("mousedown", e => { if (e.target.closest(".grab, .ph")) { start(e.clientY); e.preventDefault(); } });
+  window.addEventListener("mousemove", e => move(e.clientY));
+  window.addEventListener("mouseup", end);
+})();
 
 /* ---------- корзина ---------- */
 function renderCart(){
