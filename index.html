@@ -415,20 +415,20 @@ function watchVideos(){
 }
 /* видео в окне товара: стартуем после выезда окна и с того же места, где было видео в карточке —
    так блюдо не «прыгает». Пока грузится, показываем стоп-кадр из карточки. */
-function startSheetVideo(v, t){
+function startSheetVideo(v, getT, onShown){
   if (!v || REDUCED) return;
-  const t0 = performance.now();
-  const want = () => v.duration ? (t + (performance.now() - t0) / 1000) % v.duration : 0;
-  const near = () => !t || Math.abs(v.currentTime - want()) < 0.25;
-  const seek = () => { if (t > 0 && v.duration && !near()) { try { v.currentTime = want(); } catch (e) {} } };
+  const want = () => (getT && v.duration) ? getT() % v.duration : null;
+  const near = () => { const w = want(); return w === null || Math.abs(v.currentTime - w) < 0.12; };
+  const seek = () => { const w = want(); if (w !== null && !near()) { try { v.currentTime = w; } catch (e) {} } };
   let shown = false;
-  const show = () => { if (!shown) { shown = true; requestAnimationFrame(() => v.classList.add("on")); } };
+  const show = () => { if (shown) return; shown = true;
+    requestAnimationFrame(() => { v.classList.add("on"); onShown && setTimeout(onShown, 400); }); };
   v.muted = true; v.preload = "auto"; v.src = v.dataset.src; v.load();
   v.addEventListener("loadedmetadata", () => { seek(); const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }, {once:true});
   v.addEventListener("canplaythrough", seek, {once:true});
-  // показываем видео, только когда оно встало на нужное место — до этого виден стоп-кадр
-  v.addEventListener("timeupdate", function chk(){ if (near()) { show(); v.removeEventListener("timeupdate", chk); } });
-  setTimeout(show, 2500);
+  // чёткое видео проявляется, только когда идёт в такт с картинкой под ним
+  v.addEventListener("timeupdate", function chk(){ if (near()) { show(); v.removeEventListener("timeupdate", chk); } else seek(); });
+  setTimeout(show, 4000);
 }
 function stepper(p, cls){
   return `<div class="step ${cls||""}"><button data-act="dec" data-id="${p.id}" aria-label="Меньше">−</button>
@@ -512,18 +512,23 @@ function openSheet(id){
   const cv = document.querySelector(`#v-catalog .card[data-id="${id}"] video.on`);
   renderSheet();
   const sh = $("#sheet"), ph = sh.querySelector(".ph"), v = sh.querySelector("video.vid");
-  let t = 0;
-  if (cv && ph && cv.readyState >= 2) { // стоп-кадр из карточки — то же положение блюда
+  let mirror = null;
+  if (cv && ph && cv.readyState >= 2) {
+    // сразу показываем «живую» копию видео из карточки — без паузы; чёткое видео подменит её, когда загрузится
     try {
-      const c = document.createElement("canvas"), n = cv.videoWidth || 260;
-      c.width = n; c.height = cv.videoHeight || n; c.className = "snap";
-      c.getContext("2d").drawImage(cv, 0, 0, c.width, c.height);
+      const c = document.createElement("canvas"), g = c.getContext("2d");
+      c.width = cv.videoWidth || 260; c.height = cv.videoHeight || 260; c.className = "snap";
       ph.appendChild(c);
-      t = cv.currentTime + 0.32; // столько едет окно
+      mirror = c;
+      (function draw(){
+        if (!c.isConnected || c.dataset.stop) return;
+        try { g.drawImage(cv, 0, 0, c.width, c.height); } catch (e) {}
+        requestAnimationFrame(draw);
+      })();
     } catch (e) {}
   }
   $("#shade").classList.add("on"); sh.classList.add("on");
-  if (v) setTimeout(() => { if (S.sheetId === id) startSheetVideo(v, t); }, 320);
+  if (v) startSheetVideo(v, mirror ? () => cv.currentTime : null, () => { if (mirror) mirror.dataset.stop = 1; });
   haptic("impactOccurred", "light"); syncNav();
 }
 function renderSheet(){
