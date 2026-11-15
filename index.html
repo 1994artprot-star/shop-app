@@ -329,6 +329,7 @@ const PACKED = new URLSearchParams(location.search).get("d");
 const STATIC = !!PACKED;
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dsc = t => esc(t).replace(/(\d) (мл|г|кг|см|шт|л)(?=[.,\s]|$)/g, "$1\u00a0$2"); // «330 мл» не разрывается
 const rub = n => Math.round(n).toLocaleString("ru-RU") + " ₽";
 const haptic = (t, v) => { try { tg && tg.HapticFeedback && tg.HapticFeedback[t](v); } catch (e) {} };
 
@@ -438,7 +439,7 @@ function cardHTML(p){
   const q = qty(p.id);
   return `<div class="card" data-act="open" data-id="${p.id}">
     ${thumb(p, "ph")}${q ? `<span class="badge">${q}</span>` : ""}</div>
-    <div class="cb"><div class="nm">${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</div><div class="ds">${esc(p.descr)}</div>
+    <div class="cb"><div class="nm">${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</div><div class="ds">${dsc(p.descr)}</div>
       <div class="ft"><span class="pr-row">${rub(p.price)}</span>${q ? stepper(p) : `<button class="add" data-act="inc" data-id="${p.id}" aria-label="Добавить ${esc(p.name)}">В корзину</button>`}</div>
     </div></div>`;
 }
@@ -542,7 +543,7 @@ function renderSheet(){
   }
   sh.dataset.id = p.id;
   sh.innerHTML = `<span class="drag"></span><span class="grab"></span><button class="x" data-act="close" aria-label="Закрыть">✕</button>
-    ${thumb(p, "ph", true)}</div><div class="in"><h3>${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</h3><p>${esc(p.descr)}</p>
+    ${thumb(p, "ph", true)}</div><div class="in"><h3>${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</h3><p>${dsc(p.descr)}</p>
     <div class="row">${row}</div></div>`;
   watchVideos();
 }
@@ -789,11 +790,14 @@ $("#barBtn").addEventListener("click", () => mainAct());
 
 /* ---------- старт ---------- */
 /* ---------- режим GitHub Pages ---------- */
-function unpack(str){
+async function unpack(str){
+  const z = str[0] === "z"; if (z) str = str.slice(1); // «z…» — сжатый каталог
   const b64 = str.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((str.length + 3) % 4);
   const bin = atob(b64), bytes = new Uint8Array(bin.length);
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-  return JSON.parse(new TextDecoder().decode(bytes));
+  if (!z) return JSON.parse(new TextDecoder().decode(bytes));
+  const ds = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"));
+  return JSON.parse(await new Response(ds).text());
 }
 function makeSlots(sh){ // то же правило, что у бота: «как можно скорее» и слоты по 30 минут
   const now = new Date(); now.setSeconds(0, 0);
@@ -860,7 +864,7 @@ async function boot(){
   loadCart();
   if (STATIC) {
     try {
-      const d = unpack(PACKED), c = await cloudGet();
+      const d = await unpack(PACKED), c = await cloudGet();
       const hr = new Date().getHours();
       d.shop.open = hr >= d.shop.open_hour && hr < d.shop.close_hour; // по текущему времени, а не на момент ссылки
       let last = []; try { last = JSON.parse(c.last || "[]"); } catch (e) {}
