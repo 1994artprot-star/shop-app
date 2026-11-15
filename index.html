@@ -126,7 +126,7 @@ section.cat h2{margin:16px 2px 8px;font-size:22px;font-weight:800;letter-spacing
   max-height:88vh;overflow:auto;transform:translateY(105%);transition:transform .3s cubic-bezier(.2,.8,.2,1);
   padding-bottom:calc(16px + env(safe-area-inset-bottom));visibility:hidden;transition:transform .3s cubic-bezier(.2,.8,.2,1),visibility 0s .3s}
 .sheet.on{transform:none;visibility:visible;transition:transform .3s cubic-bezier(.2,.8,.2,1)}
-.sheet .ph{width:220px;height:220px;margin:34px auto 6px;font-size:110px}
+.sheet .ph{width:min(270px,72vw);height:min(270px,72vw);margin:34px auto 6px;font-size:110px}
 .sheet .hero-plate{background:color-mix(in srgb,var(--plate-1) 35%,var(--card));}
 .sheet .grab{position:absolute;top:8px;left:50%;width:38px;height:5px;margin-left:-19px;border-radius:3px;background:var(--sep);z-index:2}
 .sheet .x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:var(--sep);color:var(--text);font-size:18px;z-index:2}
@@ -385,11 +385,12 @@ function icon(name){
 
 /* ---------- элементы ---------- */
 function hue(id){ return (id * 47) % 360; }
-function thumb(p, cls){ // блюдо на тарелке: цвет тарелки — по категории
+function thumb(p, cls, hd){ // блюдо на тарелке: цвет тарелки — по категории
   const idx = S.cats.findIndex(c => c.id === p.cat), plate = "p" + ((idx + 1) % 5);
   const img = p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy">` : "";
   // живое фото: короткое видео по кругу поверх картинки (только в карточке и окне товара, не в корзине)
-  const vid = p.video && cls === "ph" ? `<video class="vid" muted loop playsinline preload="none" data-src="${esc(p.video)}"></video>` : "";
+  const src = hd ? (p.video_hd || p.video) : p.video;
+  const vid = src && cls === "ph" ? `<video class="vid" muted loop playsinline preload="none" data-src="${esc(src)}"></video>` : "";
   return `<div class="${cls} ${plate}">${p.photo ? "" : esc(p.emoji)}${img}${vid}`;
 }
 /* видео играют, только пока карточка на экране — экономим батарею и трафик */
@@ -487,7 +488,7 @@ function renderSheet(){
   const p = byId(S.sheetId); if (!p) return;
   const q = qty(p.id);
   $("#sheet").innerHTML = `<span class="grab"></span><button class="x" data-act="close" aria-label="Закрыть">✕</button>
-    ${thumb(p, "ph")}</div><div class="in"><h3>${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</h3><p>${esc(p.descr)}</p>
+    ${thumb(p, "ph", true)}</div><div class="in"><h3>${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</h3><p>${esc(p.descr)}</p>
     <div class="row"><span class="pr">${rub(p.price)}</span>
     ${q ? stepper(p) : `<button class="big" data-act="inc" data-id="${p.id}">В корзину</button>`}</div></div>`;
   watchVideos();
@@ -775,6 +776,11 @@ async function boot(){
       d.shop.open = hr >= d.shop.open_hour && hr < d.shop.close_hour; // по текущему времени, а не на момент ссылки
       let last = []; try { last = JSON.parse(c.last || "[]"); } catch (e) {}
       const u = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
+      for (const p of d.products) { // фото и видео лежат рядом со страницей: img/<номер>.jpg / .mp4 / _hd.mp4
+        if (p.img) p.photo = `img/${p.id}.jpg?v=${p.img}`;
+        if (p.vid) p.video = `img/${p.id}.mp4?v=${p.vid}`;
+        if (p.hd) p.video_hd = `img/${p.id}_hd.mp4?v=${p.hd}`;
+      }
       Object.assign(S, {shop:d.shop, cats:d.categories, prods:d.products, slots:makeSlots(d.shop),
         me:{first_name:u.first_name || "", demo:false, name:c.name || "", phone:c.phone || "", address:c.address || "", last_order:last}});
     } catch (e) {
