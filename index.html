@@ -70,6 +70,10 @@ input,textarea{font:inherit;color:var(--text)}
 .chip{flex:none;padding:8px 14px;border-radius:999px;background:var(--card);font-weight:500;font-size:14px;
   transition:background .2s,color .2s}
 .chip.on{background:var(--accent);color:var(--accent-text)}
+.chip{display:inline-flex;align-items:center;gap:7px}
+.ico{width:20px;height:20px;flex:none;color:var(--accent);fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.chip.on .ico{color:var(--accent-text)}
+.logo .ico{width:30px;height:30px;color:#fff;stroke-width:1.7}
 section.cat{scroll-margin-top:62px;padding:4px 16px 8px}
 section.cat h2{margin:16px 2px 8px;font-size:22px;font-weight:800;letter-spacing:-.4px}
 
@@ -239,6 +243,24 @@ function totals(method){
   return { subtotal, fee, total: subtotal + fee, count: lines().reduce((s, l) => s + l.q, 0) };
 }
 
+/* ---------- иконки категорий (свои, в фирменном цвете) ---------- */
+const ICONS = [
+  [/пицц/i, '<path d="M4 6.5C6.4 4.9 9.1 4 12 4s5.6.9 8 2.5L12 21z"/><path d="M5.6 9.2C7.5 8 9.7 7.4 12 7.4s4.5.6 6.4 1.8"/><circle cx="10.4" cy="11.3" r="1.1"/><circle cx="13.8" cy="13.6" r="1.1"/><circle cx="11.8" cy="16.2" r=".9"/>'],
+  [/ролл|суши|сет/i, '<ellipse cx="12" cy="7.5" rx="7" ry="3"/><path d="M5 7.5v8c0 1.7 3.1 3 7 3s7-1.3 7-3v-8"/><ellipse cx="12" cy="7.5" rx="3" ry="1.2"/>'],
+  [/напит|сок|морс|лимонад|вод/i, '<path d="M6.5 8h11l-1.4 12.2a1 1 0 0 1-1 .8H8.9a1 1 0 0 1-1-.8z"/><path d="M5.5 8h13"/><path d="M13 8l1.5-5h3"/><path d="M7.4 13h9.2"/>'],
+  [/десерт|торт|пирож|сладк|выпеч/i, '<path d="M4 11.5 17.5 6l2.5 5.5v7.5H4z"/><path d="M4 11.5h16"/><path d="M4 15.2h16"/><path d="M15.5 3.5c.8.7.8 1.6 0 2.5"/>'],
+  [/бургер|сэндвич|шаурм/i, '<path d="M4.5 10a7.5 6 0 0 1 15 0z"/><path d="M4 13.5h16"/><path d="M4.5 17h15a0 0 0 0 1 0 0 2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2z"/>'],
+  [/салат|боул|поке/i, '<path d="M3.5 11h17a8.5 8.5 0 0 1-17 0z"/><path d="M8 11c0-2.5 1.5-4.5 4-5.5M12.5 11c.3-2.2 1.7-3.8 4-4.5"/>'],
+  [/суп|бульон|рамен|лапш/i, '<path d="M3.5 11h17a8.5 8.5 0 0 1-17 0z"/><path d="M9 4.5c-.8.9-.8 1.9 0 2.8M12.5 4c-.8.9-.8 1.9 0 2.8M16 4.5c-.8.9-.8 1.9 0 2.8"/>'],
+  [/кофе|чай|кофейн/i, '<path d="M5 9h11v5a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10.5h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M9 3.5c-.7.8-.7 1.7 0 2.5M12 3.5c-.7.8-.7 1.7 0 2.5"/>'],
+  [/комбо|набор|акци/i, '<rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M3 9h18M12 9v11"/><path d="M12 9c-1.5-3.5-5.5-4-5.5-1.5S10 9 12 9c2 0 5.5 0 5.5-1.5S13.5 5.5 12 9z"/>'],
+  [/соус|добавк/i, '<path d="M9 3.5h6l-1 4h-4z"/><path d="M10 7.5 7.5 11v8.5a1.5 1.5 0 0 0 1.5 1.5h6a1.5 1.5 0 0 0 1.5-1.5V11L14 7.5"/><path d="M7.5 14h9"/>'],
+];
+function icon(name){
+  const hit = ICONS.find(([rx]) => rx.test(name));
+  return hit ? `<svg class="ico" viewBox="0 0 24 24" aria-hidden="true">${hit[1]}</svg>` : "";
+}
+
 /* ---------- элементы ---------- */
 function hue(id){ return (id * 47) % 360; }
 function thumb(p, cls){ // блюдо на тарелке: цвет тарелки — по категории
@@ -263,8 +285,8 @@ function cardHTML(p){
 function renderCatalog(){
   const sh = S.shop, me = S.me;
   const hello = me && me.first_name && !me.demo ? `${esc(me.first_name)}, что закажем?` : esc(sh.descr[0].toUpperCase() + sh.descr.slice(1));
-  const logo = (S.cats[0] && S.cats[0].emoji) || "🛍";
-  let h = `<div class="hero"><div class="logo" aria-hidden="true">${esc(logo)}</div><div><h1>${esc(sh.name)}</h1><p>${hello}</p></div></div>
+  const logo = (S.cats[0] && (icon(S.cats[0].name) || esc(S.cats[0].emoji))) || "🛍";
+  let h = `<div class="hero"><div class="logo" aria-hidden="true">${logo}</div><div><h1>${esc(sh.name)}</h1><p>${hello}</p></div></div>
     <div class="facts">
       <div class="fact ${sh.open ? "ok" : ""}"><b>${sh.open ? "Открыто" : "Закрыто"}</b><span>${esc(sh.hours)}</span></div>
       ${sh.delivery ? `<div class="fact"><b>${esc(sh.delivery_time.replace(" минут", " мин"))}</b><span>доставка</span></div>` : ""}
@@ -277,7 +299,7 @@ function renderCatalog(){
     const names = rep.map(i => byId(i.id).name).slice(0, 3).join(", ");
     h += `<button class="repeat" data-act="repeat"><span class="ic">🔁</span><span class="rt"><b>Повторить прошлый заказ</b><small>${esc(names)}</small></span></button>`;
   }
-  h += `<nav class="chips" id="chips">${S.cats.map((c, i) => `<button class="chip ${i ? "" : "on"}" data-act="cat" data-id="${c.id}">${esc(c.emoji)} ${esc(c.name)}</button>`).join("")}</nav>`;
+  h += `<nav class="chips" id="chips">${S.cats.map((c, i) => `<button class="chip ${i ? "" : "on"}" data-act="cat" data-id="${c.id}">${icon(c.name) || esc(c.emoji)}<span>${esc(c.name)}</span></button>`).join("")}</nav>`;
   for (const c of S.cats) {
     const ps = S.prods.filter(p => p.cat === c.id);
     if (!ps.length) continue;
