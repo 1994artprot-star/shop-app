@@ -103,6 +103,8 @@ section.cat h2{margin:16px 2px 8px;font-size:22px;font-weight:800;letter-spacing
 .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 .ph video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .4s}
 .ph video.on{opacity:1}
+.ph canvas.snap{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.ph video{z-index:1}
 .badge{position:absolute;top:2px;right:2px;min-width:24px;height:24px;padding:0 7px;border-radius:12px;
   background:var(--accent);color:var(--accent-text);font-size:13px;font-weight:700;display:grid;place-items:center}
 .cb{display:flex;flex-direction:column;flex:1;min-width:0}
@@ -129,7 +131,9 @@ section.cat h2{margin:16px 2px 8px;font-size:22px;font-weight:800;letter-spacing
 .sheet .ph{width:min(270px,72vw);height:min(270px,72vw);margin:34px auto 6px;font-size:110px}
 .sheet .hero-plate{background:color-mix(in srgb,var(--plate-1) 35%,var(--card));}
 .sheet .grab{position:absolute;top:8px;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:3px;background:rgba(255,255,255,.25);z-index:2;cursor:grab}
-.sheet{overscroll-behavior:contain;touch-action:pan-y}
+.sheet{overscroll-behavior:contain}
+.sheet .ph,.sheet .grab,.sheet .drag{touch-action:none}
+.sheet .drag{position:absolute;left:0;right:0;top:0;height:44px;z-index:1}
 .sheet .x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:var(--sep);color:var(--text);font-size:18px;z-index:2}
 .sheet .in{padding:16px}
 .sheet h3{margin:0;font-size:22px;letter-spacing:-.3px}
@@ -391,7 +395,7 @@ function thumb(p, cls, hd){ // блюдо на тарелке: цвет таре
   const img = p.photo ? `<img src="${esc(p.photo)}" alt="" loading="lazy">` : "";
   // живое фото: короткое видео по кругу поверх картинки (только в карточке и окне товара, не в корзине)
   const src = hd ? (p.video_hd || p.video) : p.video;
-  const vid = src && cls === "ph" ? `<video class="vid" muted loop playsinline preload="none" data-src="${esc(src)}"></video>` : "";
+  const vid = src && cls === "ph" ? `<video class="vid" muted loop playsinline preload="none" data-src="${esc(src)}"${hd ? ' data-defer="1"' : ""}></video>` : "";
   return `<div class="${cls} ${plate}">${p.photo ? "" : esc(p.emoji)}${img}${vid}`;
 }
 /* видео играют, только пока карточка на экране — экономим батарею и трафик */
@@ -407,7 +411,24 @@ function watchVideos(){
       const pr = v.play(); if (pr && pr.catch) pr.catch(() => {});
     } else if (!v.paused) v.pause();
   }), { rootMargin: "120px 0px" });
-  document.querySelectorAll("video.vid:not([data-w])").forEach(v => { v.dataset.w = 1; vidObs.observe(v); });
+  document.querySelectorAll("video.vid:not([data-w]):not([data-defer])").forEach(v => { v.dataset.w = 1; vidObs.observe(v); });
+}
+/* видео в окне товара: стартуем после выезда окна и с того же места, где было видео в карточке —
+   так блюдо не «прыгает». Пока грузится, показываем стоп-кадр из карточки. */
+function startSheetVideo(v, t){
+  if (!v || REDUCED) return;
+  const t0 = performance.now();
+  const want = () => v.duration ? (t + (performance.now() - t0) / 1000) % v.duration : 0;
+  const near = () => !t || Math.abs(v.currentTime - want()) < 0.25;
+  const seek = () => { if (t > 0 && v.duration && !near()) { try { v.currentTime = want(); } catch (e) {} } };
+  let shown = false;
+  const show = () => { if (!shown) { shown = true; requestAnimationFrame(() => v.classList.add("on")); } };
+  v.muted = true; v.preload = "auto"; v.src = v.dataset.src; v.load();
+  v.addEventListener("loadedmetadata", () => { seek(); const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); }, {once:true});
+  v.addEventListener("canplaythrough", seek, {once:true});
+  // показываем видео, только когда оно встало на нужное место — до этого виден стоп-кадр
+  v.addEventListener("timeupdate", function chk(){ if (near()) { show(); v.removeEventListener("timeupdate", chk); } });
+  setTimeout(show, 2500);
 }
 function stepper(p, cls){
   return `<div class="step ${cls||""}"><button data-act="dec" data-id="${p.id}" aria-label="Меньше">−</button>
@@ -488,8 +509,21 @@ function patchCards(){ // точечно обновляем карточки, ч
 function openSheet(id){
   const p = byId(id); if (!p) return;
   S.sheetId = id;
+  const cv = document.querySelector(`#v-catalog .card[data-id="${id}"] video.on`);
   renderSheet();
-  $("#shade").classList.add("on"); $("#sheet").classList.add("on");
+  const sh = $("#sheet"), ph = sh.querySelector(".ph"), v = sh.querySelector("video.vid");
+  let t = 0;
+  if (cv && ph && cv.readyState >= 2) { // стоп-кадр из карточки — то же положение блюда
+    try {
+      const c = document.createElement("canvas"), n = cv.videoWidth || 260;
+      c.width = n; c.height = cv.videoHeight || n; c.className = "snap";
+      c.getContext("2d").drawImage(cv, 0, 0, c.width, c.height);
+      ph.appendChild(c);
+      t = cv.currentTime + 0.32; // столько едет окно
+    } catch (e) {}
+  }
+  $("#shade").classList.add("on"); sh.classList.add("on");
+  if (v) setTimeout(() => { if (S.sheetId === id) startSheetVideo(v, t); }, 320);
   haptic("impactOccurred", "light"); syncNav();
 }
 function renderSheet(){
@@ -502,7 +536,7 @@ function renderSheet(){
     return;
   }
   sh.dataset.id = p.id;
-  sh.innerHTML = `<span class="grab"></span><button class="x" data-act="close" aria-label="Закрыть">✕</button>
+  sh.innerHTML = `<span class="drag"></span><span class="grab"></span><button class="x" data-act="close" aria-label="Закрыть">✕</button>
     ${thumb(p, "ph", true)}</div><div class="in"><h3>${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</h3><p>${esc(p.descr)}</p>
     <div class="row">${row}</div></div>`;
   watchVideos();
@@ -514,7 +548,13 @@ function closeSheet(){
 (function swipeSheet(){
   const sh = $("#sheet"), shade = $("#shade");
   let y0 = null, dy = 0, t0 = 0, drag = false;
-  const start = y => { if (!S.sheetId || sh.scrollTop > 0) return; y0 = y; dy = 0; t0 = Date.now(); drag = false; };
+  // тянуть можно за фото и полоску сверху всегда, за остальное окно — когда оно не прокручено
+  const start = (y, el) => {
+    if (!S.sheetId) return;
+    const zone = el && el.closest && el.closest(".ph, .grab, .drag");
+    if (!zone && sh.scrollTop > 0) return;
+    y0 = y; dy = 0; t0 = Date.now(); drag = false;
+  };
   const move = (y, e) => {
     if (y0 === null) return;
     dy = Math.max(0, y - y0);
@@ -533,10 +573,10 @@ function closeSheet(){
     else sh.style.transform = "";
     y0 = null; drag = false;
   };
-  sh.addEventListener("touchstart", e => start(e.touches[0].clientY), {passive:true});
+  sh.addEventListener("touchstart", e => start(e.touches[0].clientY, e.target), {passive:true});
   sh.addEventListener("touchmove", e => move(e.touches[0].clientY, e), {passive:false});
   sh.addEventListener("touchend", end); sh.addEventListener("touchcancel", end);
-  sh.addEventListener("mousedown", e => { if (e.target.closest(".grab, .ph")) { start(e.clientY); e.preventDefault(); } });
+  sh.addEventListener("mousedown", e => { if (e.target.closest(".grab, .ph, .drag")) { start(e.clientY, e.target); e.preventDefault(); } });
   window.addEventListener("mousemove", e => move(e.clientY));
   window.addEventListener("mouseup", end);
 })();
