@@ -139,6 +139,53 @@ section.cat h2{margin:16px 2px 8px;font-size:22px;font-weight:800;letter-spacing
 .sheet h3{margin:0;font-size:22px;letter-spacing:-.3px}
 .sheet p{margin:8px 0 0;color:var(--hint)}
 .sheet .row{display:flex;align-items:center;justify-content:space-between;margin-top:18px;gap:12px}
+.search{display:flex;align-items:center;gap:10px;margin:16px 16px 0;padding:0 14px;height:46px;border-radius:16px;
+  background:rgba(255,255,255,.045);border:1px solid var(--line)}
+.search svg{width:20px;height:20px;fill:none;stroke:var(--hint);stroke-width:2;stroke-linecap:round;flex:none}
+.search input{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--text);font:inherit;font-size:16px}
+.search input::placeholder{color:var(--hint)}
+.search input::-webkit-search-cancel-button{filter:invert(.6)}
+.nores{padding:30px 20px}
+.fav{position:absolute;left:10px;top:10px;z-index:2;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  background:rgba(5,7,11,.55);border:1px solid rgba(255,255,255,.08)}
+.fav svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2}
+.fav.on svg{fill:var(--accent);stroke:var(--accent)}
+.fav.on{animation:pop .3s ease}
+@keyframes pop{50%{transform:scale(1.25)}}
+.sh3{display:flex;align-items:flex-start;gap:10px}.sh3 h3{flex:1}
+.sh3 .fav{position:static;width:38px;height:38px;flex:none}.sh3 .fav svg{width:20px;height:20px}
+.rate{display:inline-block;margin-left:6px;font-size:12.5px;font-weight:700;color:#FFC24B;white-space:nowrap}
+.rv{margin-top:10px;font-size:14px}.rv .rate{margin:0;font-size:14px}
+.rv q{display:block;margin-top:6px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.04);color:var(--text);font-size:14px;quotes:"«" "»"}
+.card.out .ph,.sheet.out .ph{filter:grayscale(1) brightness(.6)}.card.out .nm,.card.out .pr-row{opacity:.55}
+.outl{font-size:13px;font-weight:600;color:var(--hint);padding:8px 12px;border-radius:999px;border:1px dashed rgba(255,255,255,.18);white-space:nowrap}
+.outl.big2{padding:14px 20px;font-size:15px}
+.perks{display:flex;flex-wrap:wrap;gap:8px;margin:12px 16px 0}
+.perk{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;font-size:14px;color:var(--text);
+  background:rgba(255,255,255,.045);border:1px solid var(--line)}
+.perk b{color:var(--accent2)}.perk.gift{border-color:rgba(75,227,160,.4);color:#4BE3A0}
+.perk.ref{border-color:rgba(255,90,60,.4);color:#FF7A5C;font-weight:600}
+.ordc{margin:14px 16px 0;padding:16px;border-radius:22px;border:1px solid rgba(255,90,60,.35);
+  background:linear-gradient(135deg,rgba(255,90,60,.14),rgba(255,154,60,.05)),var(--card)}
+.ordc .oh{display:flex;justify-content:space-between;align-items:center}
+.ordc .oh b{font-family:Unbounded,Manrope,sans-serif;font-size:15px;font-weight:600}
+.ordc .oh span{font-size:13px;font-weight:700;color:var(--accent2);padding:4px 10px;border-radius:999px;background:rgba(255,154,60,.12)}
+.ordc .ot{margin-top:6px;font-size:14px;color:var(--text)}
+.track{position:relative;height:6px;border-radius:3px;background:rgba(255,255,255,.08);margin:22px 4px 8px}
+.track i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .6s}
+.cour{position:absolute;top:-17px;font-size:22px;transform:translateX(-60%);animation:ride 1s ease-in-out infinite alternate;transition:left .6s}
+@keyframes ride{from{transform:translateX(-60%) translateY(0) rotate(-2deg)}to{transform:translateX(-60%) translateY(-3px) rotate(2deg)}}
+.steps{display:flex;justify-content:space-between;font-size:11.5px;color:var(--hint);font-family:var(--mono)}
+.steps .on{color:var(--text)}
+.promo{display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px}
+.promo input{flex:1;min-width:0;height:40px;background:none;border:0;outline:0;color:var(--text);font:inherit;font-size:16px;text-transform:uppercase}
+.promo input::placeholder{text-transform:none;color:var(--hint)}
+.lnk2{padding:10px 14px;border-radius:12px;font-weight:700;font-size:14px;color:#FF7A5C;background:rgba(255,90,60,.1)}
+.perr{padding:0 14px 12px;color:#FF6B6B;font-size:13px}.pok{padding:0 14px 12px;color:#4BE3A0;font-size:13px}
+.chk{width:22px;height:22px;border-radius:7px;border:1.5px solid rgba(255,255,255,.22);flex:none}
+.opt.on .chk{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;display:grid;place-items:center}
+.opt.on .chk::after{content:"";width:10px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
+.green{color:#4BE3A0}
 .fly img{width:56px;height:56px;border-radius:50%;object-fit:cover;display:block}
 .cap2{font-size:13px;color:var(--hint);margin:18px 0 8px;font-family:var(--mono);letter-spacing:-.2px}
 .adds{display:flex;flex-direction:column}
@@ -357,7 +404,8 @@ const rub = n => Math.round(n).toLocaleString("ru-RU") + " ₽";
 const haptic = (t, v) => { try { tg && tg.HapticFeedback && tg.HapticFeedback[t](v); } catch (e) {} };
 
 const S = { shop:null, cats:[], prods:[], slots:[], me:null, cart:{}, view:"catalog",
-            method:null, when:null, pay:null, sending:false, sheetId:null, sel:[] };
+            method:null, when:null, pay:null, sending:false, sheetId:null, sel:[],
+            promos:{}, promo:null, promoErr:"", useBonus:false, tip:0, q:"", fav:[] };
 const byId = id => S.prods.find(p => p.id === id);
 
 /* ---------- корзина: хранится на устройстве ---------- */
@@ -397,6 +445,59 @@ function totals(method){
   if ((method || "delivery") === "delivery" && sh.delivery && !(sh.free_from && subtotal >= sh.free_from)) fee = sh.delivery_price;
   return { subtotal, fee, total: subtotal + fee, count: lines().reduce((s, l) => s + l.q, 0) };
 }
+
+/* ---------- итог со скидками: промокод или подарок от друга, бонусы, чаевые (сервер пересчитает сам) ---------- */
+function price(method){
+  const t = totals(method), sh = S.shop, me = S.me || {};
+  let discount = 0, label = "";
+  const pr = S.promo;
+  if (pr && t.subtotal >= pr.min) { discount = pr.pct ? Math.floor(t.subtotal * pr.val / 100) : Math.min(pr.val, t.subtotal); label = `Промокод ${pr.code}`; }
+  if (me.gift && me.gift > discount) { discount = Math.min(me.gift, t.subtotal); label = "Подарок от друга"; }
+  const bonus = S.useBonus ? Math.min(me.b || 0, Math.floor((t.subtotal - discount) * (sh.bonus_max || 0) / 100)) : 0;
+  const tip = (method || S.method) === "delivery" ? S.tip : 0;
+  return Object.assign({}, t, {discount, label, bonus, tip, total: t.subtotal - discount - bonus + t.fee + tip});
+}
+async function sha12(text){
+  const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return [...new Uint8Array(h)].map(b => b.toString(16).padStart(2, "0")).join("").slice(0, 12);
+}
+
+/* ---------- избранное: на устройстве и в облаке Telegram ---------- */
+const FKEY = "shop_fav_v1";
+function loadFav(extra){ try { S.fav = JSON.parse(localStorage.getItem(FKEY) || extra || "[]") || []; } catch (e) { S.fav = []; } }
+function isFav(id){ return S.fav.includes(id); }
+function toggleFav(id){
+  const i = S.fav.indexOf(id); if (i >= 0) S.fav.splice(i, 1); else S.fav.unshift(id);
+  try { localStorage.setItem(FKEY, JSON.stringify(S.fav)); } catch (e) {}
+  if (typeof cloudSet === "function") cloudSet({fav: JSON.stringify(S.fav)});
+  haptic(i >= 0 ? "selectionChanged" : "impactOccurred", "light");
+}
+const HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 7.5 2.8c0 5.5-7.5 10.1-7.5 10.1z"/></svg>';
+const favBtn = p => `<button class="fav ${isFav(p.id) ? "on" : ""}" data-act="fav" data-id="${p.id}" aria-label="${isFav(p.id) ? "Убрать из любимого" : "В любимое"}">${HEART}</button>`;
+const stars = p => p.r ? `<span class="rate">★ ${String(p.r[0]).replace(".", ",")}</span>` : "";
+
+/* ---------- текущий заказ: статус и таймер ---------- */
+const STEPS = {new:0, accepted:0, cooking:1, delivering:2, ready:2, done:3};
+function orderCard(){
+  const o = S.me && S.me.o; if (!o || !(o.st in STEPS)) return "";
+  const eta = o.eta ? new Date(o.eta) : null, now = new Date();
+  if (eta && now - eta > 3 * 3600e3) return ""; // старый заказ — не показываем
+  const del = o.m === "delivery", step = STEPS[o.st];
+  const names = ["Принят", "Готовится", del ? "В пути" : "Готов", del ? "У вас" : "Выдан"];
+  let left = "";
+  if (eta) {
+    const mins = Math.round((eta - now) / 60000), hhmm = eta.toTimeString().slice(0, 5);
+    left = o.st === "ready" ? "Можно забирать" : mins > 0 ? `${del ? "Привезём" : "Будет готов"} к ${hhmm} · через ${mins} мин` : `${del ? "Курьер вот-вот будет" : "Почти готов"} · ${hhmm}`;
+  }
+  // где сейчас курьер на полоске: по статусу и по времени до доставки
+  let pos = [8, 38, 70, 100][step];
+  if (o.st === "delivering" && eta) { const at = new Date(o.at), tot = eta - at; if (tot > 0) pos = Math.max(70, Math.min(96, 100 * (now - at) / tot)); }
+  return `<div class="ordc" id="ordc"><div class="oh"><b>Заказ #${o.id}</b><span>${esc(names[step])}</span></div>
+    <div class="ot">${esc(left)}</div>
+    <div class="track"><i style="width:${pos}%"></i><span class="cour" style="left:${pos}%">${del ? "🛵" : "👨‍🍳"}</span></div>
+    <div class="steps">${names.map((n, i) => `<span class="${i <= step ? "on" : ""}">${esc(n)}</span>`).join("")}</div></div>`;
+}
+setInterval(() => { const el = document.getElementById("ordc"); if (el) el.outerHTML = orderCard(); }, 30000);
 
 /* ---------- иконки категорий (свои, в фирменном цвете) ---------- */
 const ICONS = [
@@ -479,10 +580,12 @@ function stepper(p, cls, k){
 }
 function cardHTML(p){
   const q = qty(p.id);
-  return `<div class="card" data-act="open" data-id="${p.id}">
-    ${thumb(p, "ph")}${q ? `<span class="badge">${q}</span>` : ""}</div>
-    <div class="cb"><div class="nm">${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</div><div class="ds">${dsc(p.descr)}</div>
-      <div class="ft"><span class="pr-row">${rub(p.price)}</span>${q ? stepper(p) : `<button class="add" data-act="inc" data-id="${p.id}" aria-label="Добавить ${esc(p.name)}">В корзину</button>`}</div>
+  const btn = p.out ? `<span class="outl">Нет в наличии</span>`
+    : q ? stepper(p) : `<button class="add" data-act="inc" data-id="${p.id}" aria-label="Добавить ${esc(p.name)}">В корзину</button>`;
+  return `<div class="card ${p.out ? "out" : ""}" data-act="open" data-id="${p.id}">
+    ${thumb(p, "ph")}${q ? `<span class="badge">${q}</span>` : ""}</div>${favBtn(p)}
+    <div class="cb"><div class="nm">${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}${stars(p)}</div><div class="ds">${dsc(p.descr)}</div>
+      <div class="ft"><span class="pr-row">${rub(p.price)}</span>${btn}</div>
     </div></div>`;
 }
 
@@ -505,19 +608,47 @@ function renderCatalog(){
     </div>`;
   if (!sh.open) h += `<div class="banner">🌙 Сейчас мы закрыты — оформите заказ на удобное время, мы привезём, как откроемся.</div>`;
   if (me && me.demo) h += `<div class="banner">👀 Предпросмотр в браузере. Тестовый заказ придёт владельцу в Telegram.</div>`;
-  const rep = (me && me.last_order || []).filter(i => byId(i.id));
+  h += orderCard();
+  const perks = [];
+  if (me && me.b) perks.push(`<span class="perk">🎁 <b>${me.b}</b> бонусов</span>`);
+  if (me && me.gift) perks.push(`<span class="perk gift">🎉 −${rub(me.gift)} на первый заказ</span>`);
+  if (me && me.ref) perks.push(`<button class="perk ref" data-act="invite">🤝 Пригласить друга</button>`);
+  if (perks.length) h += `<div class="perks">${perks.join("")}</div>`;
+  const rep = (me && me.last_order || []).filter(i => byId(i.id) && !byId(i.id).out);
   if (rep.length && !totals().count) {
     const names = rep.map(i => byId(i.id).name).slice(0, 3).join(", ");
     h += `<button class="repeat" data-act="repeat"><span class="ic">🔁</span><span class="rt"><b>Повторить прошлый заказ</b><small>${esc(names)}</small></span></button>`;
   }
-  h += `<nav class="chips" id="chips">${S.cats.map((c, i) => `<button class="chip ${i ? "" : "on"}" data-act="cat" data-id="${c.id}">${icon(c.name) || esc(c.emoji)}<span>${esc(c.name)}</span></button>`).join("")}</nav>`;
+  h += `<label class="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>
+    <input id="q" type="search" placeholder="Найти блюдо" value="${esc(S.q)}" autocomplete="off" enterkeyhint="search"></label>`;
+  const favs = S.fav.map(byId).filter(Boolean);
+  h += `<nav class="chips" id="chips">${favs.length ? `<button class="chip" data-act="cat" data-id="fav">❤️<span>Любимое</span></button>` : ""}${S.cats.map((c, i) => `<button class="chip ${i || favs.length ? "" : "on"}" data-act="cat" data-id="${c.id}">${icon(c.name) || esc(c.emoji)}<span>${esc(c.name)}</span></button>`).join("")}</nav>`;
+  if (favs.length) h += `<section class="cat" id="cat-fav" data-cat="fav"><h2>Любимое</h2><div class="grid">${favs.map(cardHTML).join("")}</div></section>`;
   for (const c of S.cats) {
     const ps = S.prods.filter(p => p.cat === c.id);
     if (!ps.length) continue;
     h += `<section class="cat" id="cat-${c.id}" data-cat="${c.id}"><h2>${esc(c.name)}</h2><div class="grid">${ps.map(cardHTML).join("")}</div></section>`;
   }
+  h += `<div class="empty nores" id="nores" hidden><div class="e">🔍</div><h2>Ничего не нашли</h2><p>Попробуйте другое слово</p></div>`;
   $("#v-catalog").innerHTML = h;
-  watchChips(); watchVideos();
+  watchChips(); watchVideos(); applySearch();
+  $("#q").addEventListener("input", e => { S.q = e.target.value; applySearch(); });
+}
+/* поиск: прячем блюда и разделы, где ничего не нашлось */
+function applySearch(){
+  const q = S.q.trim().toLowerCase().replace(/ё/g, "е");
+  let any = false;
+  document.querySelectorAll("#v-catalog section.cat").forEach(sec => {
+    let n = 0;
+    sec.querySelectorAll(".card").forEach(card => {
+      const p = byId(+card.dataset.id);
+      const ok = !q || (p.name + " " + p.descr).toLowerCase().replace(/ё/g, "е").includes(q);
+      card.hidden = !ok; if (ok) n++;
+    });
+    sec.hidden = !n || (q && sec.dataset.cat === "fav"); if (!sec.hidden) any = true;
+  });
+  const nr = $("#nores"); if (nr) nr.hidden = any;
+  const ch = $("#chips"); if (ch) ch.hidden = !!q;
 }
 let observer;
 function watchChips(){
@@ -581,11 +712,12 @@ function openSheet(id){
 function sheetInner(p){
   const all = addonsOf(p), k = keyOf(p.id, S.sel), q = S.cart[k] || 0;
   const unit = p.price + all.filter(a => S.sel.includes(a.id)).reduce((s, a) => s + a.price, 0);
-  let h = `<h3>${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</h3><p>${dsc(p.descr)}</p>`;
-  if (all.length) h += `<div class="adds"><div class="cap2">Добавить по вкусу</div>${all.map(a =>
+  let h = `<div class="sh3"><h3>${esc(p.name)}${p.hit ? `<span class="hit">Хит</span>` : ""}</h3>${favBtn(p)}</div><p>${dsc(p.descr)}</p>`;
+  if (p.r) h += `<div class="rv"><span class="rate">★ ${String(p.r[0]).replace(".", ",")}</span> <span class="muted">· ${p.r[1]} ${p.r[1] % 10 === 1 && p.r[1] % 100 !== 11 ? "оценка" : (p.r[1] % 10 >= 2 && p.r[1] % 10 <= 4 && (p.r[1] % 100 < 12 || p.r[1] % 100 > 14)) ? "оценки" : "оценок"}</span>${p.r[2] ? `<q>${esc(p.r[2])}</q>` : ""}</div>`;
+  if (all.length && !p.out) h += `<div class="adds"><div class="cap2">Добавить по вкусу</div>${all.map(a =>
     `<button class="addon ${S.sel.includes(a.id) ? "on" : ""}" data-act="addon" data-id="${a.id}"><i></i><span>${esc(a.name)}</span><b>+${rub(a.price)}</b></button>`).join("")}</div>`;
   h += `<div class="row"><span class="pr">${rub(unit)}</span>
-    ${q ? stepper(p, "", k) : `<button class="big" data-act="put">В корзину</button>`}</div>`;
+    ${p.out ? `<span class="outl big2">Нет в наличии</span>` : q ? stepper(p, "", k) : `<button class="big" data-act="put">В корзину</button>`}</div>`;
   const recs = recommend(p);
   if (recs.length) h += `<div class="recs"><div class="cap2">Вам может понравиться</div><div class="rl">${recs.map(r => {
     const rq = qty(r.id);
@@ -597,7 +729,7 @@ function sheetInner(p){
 }
 /* что предложить к блюду: из других разделов, по одному-два из каждого, сначала хиты */
 function recommend(p){
-  const others = S.cats.filter(c => c.id !== p.cat).map(c => S.prods.filter(x => x.cat === c.id)
+  const others = S.cats.filter(c => c.id !== p.cat).map(c => S.prods.filter(x => x.cat === c.id && !x.out)
     .sort((a, b) => (b.hit ? 1 : 0) - (a.hit ? 1 : 0)));
   const out = [];
   for (let round = 0; round < 2 && out.length < 6; round++)
@@ -613,12 +745,13 @@ function renderSheet(){
     sh.scrollTop = sc; const rl2 = sh.querySelector(".rl"); if (rl2) rl2.scrollLeft = rx;
     return;
   }
-  sh.dataset.id = p.id;
+  sh.dataset.id = p.id; sh.classList.toggle("out", !!p.out);
   sh.innerHTML = `<span class="drag"></span><span class="grab"></span><button class="x" data-act="close" aria-label="Закрыть">✕</button>
     ${thumb(p, "ph", true)}</div><div class="in">${sheetInner(p)}</div>`;
   watchVideos();
 }
 function closeSheet(){
+  if (S.favDirty) { S.favDirty = false; setTimeout(() => { const y = scrollY; renderCatalog(); scrollTo(0, y); }, 330); }
   S.sheetId = null; $("#sheet").dataset.id = ""; $("#shade").classList.remove("on"); $("#sheet").classList.remove("on"); syncNav();
   const sv = $("#sheet video.vid"); if (sv) sv.pause();
   setTimeout(() => document.querySelectorAll("#v-catalog video[data-held]").forEach(x => { // список снова оживает
@@ -709,11 +842,27 @@ function renderCheckout(){
       <div class="fld" id="w-name"><label>Имя</label><input id="f-name" value="${esc(name)}" autocomplete="given-name" maxlength="50"></div>
       <div class="fld" id="w-phone"><label>Телефон</label><input id="f-phone" type="tel" inputmode="tel" value="${esc(phone)}" placeholder="+7 900 000-00-00" autocomplete="tel"></div>
       <div class="fld"><label>Комментарий (необязательно)</label><input id="f-comm" value="${esc(comm)}" placeholder="Без лука, позвонить за 10 минут…" maxlength="300"></div></div>`;
+  if (S.method === "delivery" && (sh.tips || []).length) {
+    h += `<div class="cap">Чаевые курьеру</div><div class="slots">${[0].concat(sh.tips).map(v => `<button class="slot ${S.tip === v ? "on" : ""}" data-act="tip" data-v="${v}">${v ? rub(v) : "Без чаевых"}</button>`).join("")}</div>`;
+  }
+  const b = (S.me && S.me.b) || 0, pz = price(S.method);
+  h += `<div class="cap">Скидки и бонусы</div><div class="box">
+    <div class="promo" id="w-promo"><input id="f-promo" placeholder="Промокод" value="${esc(S.promo ? S.promo.code : (v("f-promo") ?? ""))}" autocapitalize="characters" maxlength="20">
+      <button class="lnk2" data-act="${S.promo ? "promooff" : "promo"}">${S.promo ? "Убрать" : "Применить"}</button></div>
+    ${S.promoErr ? `<div class="perr">${esc(S.promoErr)}</div>` : S.promo ? `<div class="pok">✓ ${S.promo.pct ? S.promo.val + "%" : rub(S.promo.val)} скидка${S.promo.min > pz.subtotal ? ` — от ${rub(S.promo.min)}` : ""}</div>` : ""}
+    ${S.me && S.me.gift ? `<div class="pok">🎉 Подарок от друга: −${rub(S.me.gift)} на первый заказ</div>` : ""}
+    ${b ? `<button class="opt ${S.useBonus ? "on" : ""}" data-act="bonus"><span class="t">🎁 Списать бонусы<span>У вас ${b} · можно до ${sh.bonus_max}% заказа</span></span><i class="chk"></i></button>` : ""}
+  </div>`;
   h += `<div class="cap">Оплата</div><div class="box">${sh.pay.map(p => `<button class="opt ${p.code === S.pay ? "on" : ""}" data-act="pay" data-v="${p.code}">
       <span class="t">${p.code === "online" ? "💳" : "💵"} ${esc(p.title)}<span>${esc(p.sub)}</span></span><i class="radio"></i></button>`).join("")}</div>`;
-  h += `<div class="box sum"><div><span class="muted">Товары</span><span>${rub(t.subtotal)}</span></div>`;
-  if (S.method === "delivery") h += `<div><span class="muted">Доставка</span><span>${t.fee ? rub(t.fee) : "бесплатно"}</span></div>`;
-  h += `<div class="tot"><span>К оплате</span><span>${rub(t.total)}</span></div></div>
+  const z = price(S.method);
+  h += `<div class="box sum"><div><span class="muted">Товары</span><span>${rub(z.subtotal)}</span></div>`;
+  if (z.discount) h += `<div><span class="muted">${esc(z.label)}</span><span class="green">−${rub(z.discount)}</span></div>`;
+  if (z.bonus) h += `<div><span class="muted">Бонусами</span><span class="green">−${rub(z.bonus)}</span></div>`;
+  if (S.method === "delivery") h += `<div><span class="muted">Доставка</span><span>${z.fee ? rub(z.fee) : "бесплатно"}</span></div>`;
+  if (z.tip) h += `<div><span class="muted">Чаевые курьеру</span><span>${rub(z.tip)}</span></div>`;
+  if (S.shop.bonus_pct) h += `<div><span class="muted">Вернётся бонусами</span><span class="green">+${Math.floor((z.subtotal - z.discount - z.bonus) * S.shop.bonus_pct / 100)}</span></div>`;
+  h += `<div class="tot"><span>К оплате</span><span>${rub(z.total)}</span></div></div>
     <p class="legal">Нажимая «Заказать», вы соглашаетесь на обработку персональных данных для выполнения заказа (152-ФЗ).</p>`;
   $("#v-checkout").innerHTML = h;
 }
@@ -730,7 +879,8 @@ async function submit(){
   const val = id => (document.getElementById(id) || {}).value || "";
   const body = { initData: inTG ? tg.initData : "", items: lines().map(l => l.add.length ? {id:l.p.id, qty:l.q, add:l.add.map(a => a.id)} : {id:l.p.id, qty:l.q}),
     method: S.method, address: val("f-addr").trim(), when: S.when, name: val("f-name").trim(),
-    phone: val("f-phone").trim(), comment: val("f-comm").trim(), pay: S.pay };
+    phone: val("f-phone").trim(), comment: val("f-comm").trim(), pay: S.pay,
+    promo: S.promo ? S.promo.code : "", bonus: S.useBonus, tip: S.method === "delivery" ? S.tip : 0 };
   if (S.method === "delivery" && body.address.length < 5) return fieldError("w-addr", "Укажите адрес: улица и дом");
   if (!body.when) return fieldError("w-when", "Выберите время");
   if (!body.name) return fieldError("w-name", "Как к вам обращаться?");
@@ -793,7 +943,7 @@ function mainState(){
     return left > 0 ? { text: `До минимального заказа ${rub(left)}`, on: false, act: () => {} }
                     : { text: "Оформить заказ", on: true, act: () => go("checkout") };
   }
-  if (S.view === "checkout") return { text: S.sending ? "Отправляем…" : `Заказать · ${rub(totals(S.method).total)}`, on: !S.sending, act: submit };
+  if (S.view === "checkout") return { text: S.sending ? "Отправляем…" : `Заказать · ${rub(price(S.method).total)}`, on: !S.sending, act: submit };
 }
 let mainAct = () => {};
 function syncMain(){
@@ -847,8 +997,35 @@ document.addEventListener("click", e => {
     e.stopPropagation();
     const k = el.dataset.key;
     if (k) return setKey(k, (S.cart[k] || 0) + (act === "inc" ? 1 : -1));
+    if (act === "inc" && byId(id) && byId(id).out) return toast("Этого сейчас нет в наличии");
     if (act === "inc" && !qty(id)) flyToCart(el);
     return setQty(id, qty(id) + (act === "inc" ? 1 : -1));
+  }
+  if (act === "fav") {
+    e.stopPropagation(); toggleFav(id);
+    document.querySelectorAll(`.fav[data-id="${id}"]`).forEach(b => b.classList.toggle("on", isFav(id)));
+    if (S.view === "catalog" && !S.sheetId) { const y = scrollY; renderCatalog(); scrollTo(0, y); } else S.favDirty = true;
+    return;
+  }
+  if (act === "invite") {
+    const ref = S.me && S.me.ref; if (!ref) return;
+    const txt = `Заказываю еду в «${S.shop.name}» — держи ${rub(S.shop.ref_gift)} скидки на первый заказ 🎁`;
+    const url = `https://t.me/share/url?url=${encodeURIComponent(ref)}&text=${encodeURIComponent(txt)}`;
+    return inTG && tg.openTelegramLink ? tg.openTelegramLink(url) : window.open(url, "_blank");
+  }
+  if (act === "tip") { S.tip = +el.dataset.v; haptic("selectionChanged"); renderCheckout(); return syncMain(); }
+  if (act === "bonus") { S.useBonus = !S.useBonus; haptic("selectionChanged"); renderCheckout(); return syncMain(); }
+  if (act === "promooff") { S.promo = null; S.promoErr = ""; const f = $("#f-promo"); if (f) f.value = ""; renderCheckout(); return syncMain(); }
+  if (act === "promo") {
+    const code = (($("#f-promo") || {}).value || "").trim().toUpperCase();
+    if (!code) { S.promoErr = "Введите промокод"; return renderCheckout(); }
+    sha12(code).then(h => {
+      const r = S.promos[h];
+      if (!r) { S.promo = null; S.promoErr = "Такого промокода нет"; haptic("notificationOccurred", "error"); }
+      else { S.promo = {code, pct: !!r[0], val: r[1], min: r[2]}; S.promoErr = ""; haptic("notificationOccurred", "success"); }
+      renderCheckout(); syncMain();
+    }).catch(() => { S.promoErr = "Не получилось проверить промокод"; renderCheckout(); });
+    return;
   }
   if (act === "addon") { // галочка добавки в окне товара
     const i = S.sel.indexOf(id); if (i >= 0) S.sel.splice(i, 1); else S.sel.push(id);
@@ -862,13 +1039,13 @@ document.addEventListener("click", e => {
   }
   if (act === "open") return openSheet(id);
   if (act === "close") return closeSheet();
-  if (act === "cat") { const s = document.getElementById("cat-" + id); return s && s.scrollIntoView({behavior:"smooth"}); }
+  if (act === "cat") { const s = document.getElementById("cat-" + el.dataset.id); return s && s.scrollIntoView({behavior:"smooth"}); }
   if (act === "go") return go(el.dataset.view);
   if (act === "clear") {
     const run = () => { S.cart = {}; saveCart(); go("catalog"); };
     return inTG ? tg.showConfirm("Очистить корзину?", ok => ok && run()) : (confirm("Очистить корзину?") && run());
   }
-  if (act === "repeat") { (S.me.last_order || []).forEach(i => { if (byId(i.id)) { const k = keyOf(i.id, i.add); S.cart[k] = (S.cart[k] || 0) + i.qty; } }); saveCart(); haptic("notificationOccurred", "success"); return go("cart"); }
+  if (act === "repeat") { (S.me.last_order || []).forEach(i => { if (byId(i.id) && !byId(i.id).out) { const k = keyOf(i.id, i.add); S.cart[k] = (S.cart[k] || 0) + i.qty; } }); saveCart(); haptic("notificationOccurred", "success"); return go("cart"); }
   if (act === "method") { S.method = el.dataset.v; haptic("selectionChanged"); renderCheckout(); return syncMain(); }
   if (act === "when") { S.when = el.dataset.v; haptic("selectionChanged"); document.querySelectorAll(".slot").forEach(s => s.classList.toggle("on", s === el)); return; }
   if (act === "pay") { S.pay = el.dataset.v; haptic("selectionChanged"); document.querySelectorAll(".opt").forEach(o => o.classList.toggle("on", o === el)); return; }
@@ -907,7 +1084,7 @@ function makeSlots(sh){ // то же правило, что у бота: «ка�
   }
   return out;
 }
-const CS_KEYS = ["name", "phone", "address", "last"];
+const CS_KEYS = ["name", "phone", "address", "last", "fav"];
 function cloudGet(){ // имя, телефон, адрес и прошлый заказ хранятся в облаке Telegram у самого клиента
   return new Promise(res => {
     const cs = tg && tg.CloudStorage;
@@ -963,8 +1140,9 @@ async function boot(){
         if (p.vid) p.video = `img/${p.id}.mp4?v=${p.vid}`;
         if (p.hd) p.video_hd = `img/${p.id}_hd.mp4?v=${p.hd}`;
       }
-      Object.assign(S, {shop:d.shop, cats:d.categories, prods:d.products, slots:makeSlots(d.shop),
-        me:{first_name:u.first_name || "", demo:false, name:c.name || "", phone:c.phone || "", address:c.address || "", last_order:last}});
+      Object.assign(S, {shop:d.shop, cats:d.categories, prods:d.products, slots:makeSlots(d.shop), promos:d.promos || {},
+        me:Object.assign({first_name:u.first_name || "", demo:false, name:c.name || "", phone:c.phone || "", address:c.address || "", last_order:last}, d.me || {})});
+      loadFav(c.fav);
     } catch (e) {
       $("#loading").innerHTML = `<div class="empty"><div class="e">🔗</div><h2>Откройте витрину из бота</h2><p>Нажмите «🛍 Магазин» в меню бота</p></div>`;
       return;
@@ -978,8 +1156,10 @@ async function boot(){
     $("#loading").innerHTML = `<div class="empty"><div class="e">📡</div><h2>Нет связи с магазином</h2><p>Закройте окно и откройте снова</p></div>`;
     return;
   }
+  if (!S.fav.length) loadFav();
+  S.fav = S.fav.filter(id => byId(id));
   for (const k of Object.keys(S.cart)) { // убираем закончившиеся товары и добавки
-    const {id, add} = parseKey(k), p = byId(id), ok = p && add.every(a => addonsOf(p).some(x => x.id === a));
+    const {id, add} = parseKey(k), p = byId(id), ok = p && !p.out && add.every(a => addonsOf(p).some(x => x.id === a));
     if (!ok) delete S.cart[k];
   }
   saveCart();
