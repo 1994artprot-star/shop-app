@@ -76,8 +76,7 @@ input,textarea{font:inherit;color:var(--text)}
 
 /* ---------- категории ---------- */
 .chips{position:sticky;top:0;z-index:5;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
-  padding:12px 16px;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px)}
+  padding:12px 16px;background:color-mix(in srgb,var(--bg) 96%,transparent)}
 .chips::-webkit-scrollbar{display:none}
 .chip{flex:none;padding:8px 14px;border-radius:999px;background:var(--card);font-weight:500;font-size:14px;
   transition:background .2s,color .2s}
@@ -131,7 +130,8 @@ section.cat h2{margin:16px 2px 8px;font-size:22px;font-weight:800;letter-spacing
 .sheet .ph{width:min(270px,72vw);height:min(270px,72vw);margin:34px auto 6px;font-size:110px}
 .sheet .hero-plate{background:color-mix(in srgb,var(--plate-1) 35%,var(--card));}
 .sheet .grab{position:absolute;top:8px;left:50%;width:44px;height:5px;margin-left:-22px;border-radius:3px;background:rgba(255,255,255,.25);z-index:2;cursor:grab}
-.sheet{overscroll-behavior:contain}
+.sheet{overscroll-behavior:contain;will-change:transform;contain:layout paint}
+.shade{will-change:opacity}
 .sheet .ph,.sheet .grab,.sheet .drag{touch-action:none}
 .sheet .drag{position:absolute;left:0;right:0;top:0;height:44px;z-index:1}
 .sheet .x{position:absolute;top:12px;right:12px;width:32px;height:32px;border-radius:50%;background:var(--sep);color:var(--text);font-size:18px;z-index:2}
@@ -200,7 +200,7 @@ section.cat h2{margin:16px 2px 8px;font-size:22px;font-weight:800;letter-spacing
 
 /* ---------- кнопка внизу (когда открыто не в Telegram) ---------- */
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:15;padding:10px 16px calc(10px + env(safe-area-inset-bottom));
-  background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+  background:color-mix(in srgb,var(--bg) 96%,transparent)}
 .bar button{width:100%;height:52px;border-radius:999px;background:var(--accent);color:var(--accent-text);font-weight:700;font-size:16px}
 .bar button:disabled{opacity:.55}
 .toast{position:fixed;left:50%;top:14px;transform:translate(-50%,-140%);z-index:30;max-width:90%;
@@ -528,8 +528,11 @@ function openSheet(id){
       })();
     } catch (e) {}
   }
+  // на время окна останавливаем остальные видео в списке — телефону легче
+  document.querySelectorAll("#v-catalog video.vid").forEach(x => { if (x !== cv && !x.paused) { x.pause(); x.dataset.held = 1; } });
   $("#shade").classList.add("on"); sh.classList.add("on");
-  if (v) startSheetVideo(v, mirror ? () => cv.currentTime : null, () => { if (mirror) mirror.dataset.stop = 1; });
+  // чёткое видео начинаем грузить, когда окно уже выехало; до этого играет копия из карточки
+  if (v) setTimeout(() => { if (S.sheetId === id) startSheetVideo(v, mirror ? () => cv.currentTime : null, () => { if (mirror) mirror.dataset.stop = 1; }); }, mirror ? 320 : 0);
   haptic("impactOccurred", "light"); syncNav();
 }
 function renderSheet(){
@@ -549,6 +552,10 @@ function renderSheet(){
 }
 function closeSheet(){
   S.sheetId = null; $("#sheet").dataset.id = ""; $("#shade").classList.remove("on"); $("#sheet").classList.remove("on"); syncNav();
+  const sv = $("#sheet video.vid"); if (sv) sv.pause();
+  setTimeout(() => document.querySelectorAll("#v-catalog video[data-held]").forEach(x => { // список снова оживает
+    delete x.dataset.held; const r = x.getBoundingClientRect();
+    if (r.bottom > -120 && r.top < innerHeight + 120) { const pr = x.play(); if (pr && pr.catch) pr.catch(() => {}); } }), 320);
 }
 /* окно товара смахивается пальцем вниз */
 (function swipeSheet(){
