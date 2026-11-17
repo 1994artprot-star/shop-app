@@ -10,7 +10,9 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;600;700&display=swap" media="print" onload="this.media='all'">
 <script>/* Telegram открывает витрину со ссылкой ?d=… (каталог в ссылке). Без неё на GitHub Pages — это MAX:
    скрипт Telegram там не нужен и может долго грузиться */
-window.__MAXPAGE = /[?&]max=1/.test(location.search) || (location.hostname.endsWith("github.io") && !/[?&]d=/.test(location.search));
+/* Telegram: ссылка с ?d=… (GitHub Pages) или страница /app (свой сервер). Всё остальное — MAX */
+window.__MAXPAGE = !!window.WebApp || /[?&]max=1/.test(location.search) ||
+  (!/[?&]d=/.test(location.search) && !/\/app\/?$/.test(location.pathname));
 if (!window.__MAXPAGE) document.write('<script src="https://telegram.org/js/telegram-web-app.js"><\/script>');</script>
 <style>
 :root{
@@ -1181,6 +1183,9 @@ function maxSubmit(){
   setTimeout(() => { try { MX && MX.close && MX.close(); } catch (e) {} }, 400);
 }
 
+function diag(e){ // служебная строка для поддержки: по скриншоту видно, где сломалось
+  return `<p style="opacity:.45;font-size:11px;word-break:break-all;margin-top:18px">v3 · ${esc(location.host + location.pathname)} · ${MAXMODE ? "max" : inTG ? "tg" : "web"} · WebApp:${window.WebApp ? 1 : 0} · ${esc(String(e && e.message || e).slice(0, 80))}</p>`;
+}
 async function boot(){
   if (tg) {
     tg.ready(); tg.expand();
@@ -1207,7 +1212,7 @@ async function boot(){
         me:Object.assign({first_name:u.first_name || "", demo:false, name:c.name || "", phone:c.phone || "", address:c.address || "", last_order:last}, d.me || {})});
       loadFav(c.fav);
     } catch (e) {
-      $("#loading").innerHTML = `<div class="empty"><div class="e">🔗</div><h2>Откройте витрину из бота</h2><p>Нажмите «🛍 Магазин» в меню бота</p></div>`;
+      $("#loading").innerHTML = `<div class="empty"><div class="e">🔗</div><h2>Откройте витрину из бота</h2><p>Нажмите «🛍 Магазин» в меню бота</p>${diag(e)}</div>`;
       return;
     }
   } else try {
@@ -1216,7 +1221,7 @@ async function boot(){
     const d = await r.json();
     Object.assign(S, {shop:d.shop, cats:d.categories, prods:d.products, slots:d.slots, me:d.me});
   } catch (e) {
-    $("#loading").innerHTML = `<div class="empty"><div class="e">📡</div><h2>Нет связи с магазином</h2><p>Закройте окно и откройте снова</p></div>`;
+    $("#loading").innerHTML = `<div class="empty"><div class="e">📡</div><h2>Нет связи с магазином</h2><p>Закройте окно и откройте снова</p>${diag(e)}</div>`;
     return;
   }
   if (!S.fav.length) loadFav();
