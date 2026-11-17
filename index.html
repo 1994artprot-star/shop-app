@@ -186,6 +186,7 @@ section.cat h2{margin:16px 2px 8px;font-size:22px;font-weight:800;letter-spacing
 .opt.on .chk{background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:transparent;display:grid;place-items:center}
 .opt.on .chk::after{content:"";width:10px;height:5px;border:2px solid #fff;border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
 .green{color:#4BE3A0}
+.bk{width:38px;height:38px;margin-right:6px;border-radius:12px;font-size:26px;line-height:1;color:var(--text);background:rgba(255,255,255,.05);flex:none}
 .fly img{width:56px;height:56px;border-radius:50%;object-fit:cover;display:block}
 .cap2{font-size:13px;color:var(--hint);margin:18px 0 8px;font-family:var(--mono);letter-spacing:-.2px}
 .adds{display:flex;flex-direction:column}
@@ -396,7 +397,9 @@ const tg = window.Telegram && window.Telegram.WebApp;
 const inTG = !!(tg && (tg.initData || (tg.platform && tg.platform !== "unknown")));
 // Режим GitHub Pages: каталог пришёл прямо в ссылке (?d=...), заказ уходит в чат бота через sendData.
 const PACKED = new URLSearchParams(location.search).get("d");
-const STATIC = !!PACKED;
+const MAXMODE = new URLSearchParams(location.search).get("max") === "1" && !inTG; // витрина открыта в MAX
+const STATIC = !!PACKED || MAXMODE;
+let MX = null; // объект WebApp мессенджера MAX
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const dsc = t => esc(t).replace(/(\d) (мл|г|кг|см|шт|л)(?=[.,\s]|$)/g, "$1\u00a0$2"); // «330 мл» не разрывается
@@ -805,7 +808,7 @@ function renderCart(){
     return;
   }
   const sh = S.shop, t = totals(S.method || (sh.delivery ? "delivery" : "pickup"));
-  let h = `<div class="top"><h1>Корзина</h1><button class="lnk" data-act="clear">Очистить</button></div><div class="box">`;
+  let h = `<div class="top">${inTG ? "" : `<button class="bk" data-act="back" aria-label="Назад">‹</button>`}<h1>Корзина</h1><button class="lnk" data-act="clear">Очистить</button></div><div class="box">`;
   h += ls.map(l => `<div class="li">${thumb(l.p, "th")}</div><div class="t"><b>${esc(l.p.name)}</b>${l.add.length ? `<em>+ ${esc(l.add.map(a => a.name).join(", "))}</em>` : ""}<span>${rub(l.unit)}</span></div>${stepper(l.p, "sm", l.k)}</div>`).join("");
   h += `</div><div class="box sum"><div><span class="muted">Товары · ${t.count} шт</span><span>${rub(t.subtotal)}</span></div>`;
   if (sh.delivery) h += `<div><span class="muted">Доставка</span><span>${t.fee ? rub(t.fee) : "бесплатно"}</span></div>`;
@@ -830,9 +833,11 @@ function renderCheckout(){
   const name = v("f-name") ?? (me.name || me.first_name || ""), phone = v("f-phone") ?? (me.phone || ""),
         addr = v("f-addr") ?? (me.address || ""), comm = v("f-comm") ?? "";
   const t = totals(S.method);
-  let h = `<div class="top"><h1>Оформление</h1></div>`;
+  let h = `<div class="top">${inTG ? "" : `<button class="bk" data-act="back" aria-label="Назад">‹</button>`}<h1>Оформление</h1></div>`;
   if (sh.delivery && sh.pickup) h += `<div class="seg"><button class="${S.method === "delivery" ? "on" : ""}" data-act="method" data-v="delivery">🚗 Доставка</button>
       <button class="${S.method === "pickup" ? "on" : ""}" data-act="method" data-v="pickup">🏃 Самовывоз</button></div>`;
+  if (MAXMODE) h += `<div class="note">Адрес, время и телефон спросим в чате с ботом — это займёт минуту.</div>`;
+  if (!MAXMODE) {
   h += `<div class="cap">${S.method === "delivery" ? "Куда доставить" : "Откуда забрать"}</div><div class="box">`;
   h += S.method === "delivery"
     ? `<div class="fld" id="w-addr"><label>Адрес: улица, дом, подъезд, этаж, квартира</label><textarea id="f-addr" rows="2" autocomplete="street-address">${esc(addr)}</textarea></div>`
@@ -842,6 +847,7 @@ function renderCheckout(){
       <div class="fld" id="w-name"><label>Имя</label><input id="f-name" value="${esc(name)}" autocomplete="given-name" maxlength="50"></div>
       <div class="fld" id="w-phone"><label>Телефон</label><input id="f-phone" type="tel" inputmode="tel" value="${esc(phone)}" placeholder="+7 900 000-00-00" autocomplete="tel"></div>
       <div class="fld"><label>Комментарий (необязательно)</label><input id="f-comm" value="${esc(comm)}" placeholder="Без лука, позвонить за 10 минут…" maxlength="300"></div></div>`;
+  }
   if (S.method === "delivery" && (sh.tips || []).length) {
     h += `<div class="cap">Чаевые курьеру</div><div class="slots">${[0].concat(sh.tips).map(v => `<button class="slot ${S.tip === v ? "on" : ""}" data-act="tip" data-v="${v}">${v ? rub(v) : "Без чаевых"}</button>`).join("")}</div>`;
   }
@@ -853,7 +859,7 @@ function renderCheckout(){
     ${S.me && S.me.gift ? `<div class="pok">🎉 Подарок от друга: −${rub(S.me.gift)} на первый заказ</div>` : ""}
     ${b ? `<button class="opt ${S.useBonus ? "on" : ""}" data-act="bonus"><span class="t">🎁 Списать бонусы<span>У вас ${b} · можно до ${sh.bonus_max}% заказа</span></span><i class="chk"></i></button>` : ""}
   </div>`;
-  h += `<div class="cap">Оплата</div><div class="box">${sh.pay.map(p => `<button class="opt ${p.code === S.pay ? "on" : ""}" data-act="pay" data-v="${p.code}">
+  if (!MAXMODE) h += `<div class="cap">Оплата</div><div class="box">${sh.pay.map(p => `<button class="opt ${p.code === S.pay ? "on" : ""}" data-act="pay" data-v="${p.code}">
       <span class="t">${p.code === "online" ? "💳" : "💵"} ${esc(p.title)}<span>${esc(p.sub)}</span></span><i class="radio"></i></button>`).join("")}</div>`;
   const z = price(S.method);
   h += `<div class="box sum"><div><span class="muted">Товары</span><span>${rub(z.subtotal)}</span></div>`;
@@ -863,7 +869,7 @@ function renderCheckout(){
   if (z.tip) h += `<div><span class="muted">Чаевые курьеру</span><span>${rub(z.tip)}</span></div>`;
   if (S.shop.bonus_pct) h += `<div><span class="muted">Вернётся бонусами</span><span class="green">+${Math.floor((z.subtotal - z.discount - z.bonus) * S.shop.bonus_pct / 100)}</span></div>`;
   h += `<div class="tot"><span>К оплате</span><span>${rub(z.total)}</span></div></div>
-    <p class="legal">Нажимая «Заказать», вы соглашаетесь на обработку персональных данных для выполнения заказа (152-ФЗ).</p>`;
+    <p class="legal" ${MAXMODE ? "hidden" : ""}>Нажимая «Заказать», вы соглашаетесь на обработку персональных данных для выполнения заказа (152-ФЗ).</p>`;
   $("#v-checkout").innerHTML = h;
 }
 function fieldError(id, msg){
@@ -876,6 +882,7 @@ function phoneOk(s){ const d = s.replace(/\D/g, ""); return (d.length === 11 && 
 
 async function submit(){
   if (S.sending) return;
+  if (MAXMODE) return maxSubmit();
   const val = id => (document.getElementById(id) || {}).value || "";
   const body = { initData: inTG ? tg.initData : "", items: lines().map(l => l.add.length ? {id:l.p.id, qty:l.q, add:l.add.map(a => a.id)} : {id:l.p.id, qty:l.q}),
     method: S.method, address: val("f-addr").trim(), when: S.when, name: val("f-name").trim(),
@@ -930,6 +937,7 @@ function back(){
 }
 function syncNav(){
   if (inTG) { (S.sheetId || S.view !== "catalog") ? tg.BackButton.show() : tg.BackButton.hide(); }
+  else if (MX && MX.BackButton) { try { (S.sheetId || S.view !== "catalog") ? MX.BackButton.show() : MX.BackButton.hide(); } catch (e) {} }
   syncMain();
 }
 function mainState(){
@@ -943,7 +951,7 @@ function mainState(){
     return left > 0 ? { text: `До минимального заказа ${rub(left)}`, on: false, act: () => {} }
                     : { text: "Оформить заказ", on: true, act: () => go("checkout") };
   }
-  if (S.view === "checkout") return { text: S.sending ? "Отправляем…" : `Заказать · ${rub(price(S.method).total)}`, on: !S.sending, act: submit };
+  if (S.view === "checkout") return { text: S.sending ? "Отправляем…" : `${MAXMODE ? "Продолжить в чате" : "Заказать"} · ${rub(price(S.method).total)}`, on: !S.sending, act: submit };
 }
 let mainAct = () => {};
 function syncMain(){
@@ -1001,6 +1009,7 @@ document.addEventListener("click", e => {
     if (act === "inc" && !qty(id)) flyToCart(el);
     return setQty(id, qty(id) + (act === "inc" ? 1 : -1));
   }
+  if (act === "back") return back();
   if (act === "fav") {
     e.stopPropagation(); toggleFav(id);
     document.querySelectorAll(`.fav[data-id="${id}"]`).forEach(b => b.classList.toggle("on", isFav(id)));
@@ -1011,6 +1020,11 @@ document.addEventListener("click", e => {
     const ref = S.me && S.me.ref; if (!ref) return;
     const txt = `Заказываю еду в «${S.shop.name}» — держи ${rub(S.shop.ref_gift)} скидки на первый заказ 🎁`;
     const url = `https://t.me/share/url?url=${encodeURIComponent(ref)}&text=${encodeURIComponent(txt)}`;
+    if (MAXMODE) { // в MAX — копируем ссылку, её можно переслать другу в любом чате
+      const done = () => toast("Ссылка скопирована — отправьте её другу");
+      try { navigator.clipboard.writeText(`${txt}\n${ref}`).then(done, () => toast(ref)); } catch (e) { toast(ref); }
+      return;
+    }
     return inTG && tg.openTelegramLink ? tg.openTelegramLink(url) : window.open(url, "_blank");
   }
   if (act === "tip") { S.tip = +el.dataset.v; haptic("selectionChanged"); renderCheckout(); return syncMain(); }
@@ -1119,6 +1133,51 @@ async function submitStatic(body){
   tg.sendData(data); // Telegram отправит заказ боту и закроет витрину; подтверждение придёт в чат
 }
 
+/* ---------- MAX: мост мессенджера, меню с сайта, личное из параметра запуска ---------- */
+function loadScript(src, ms){
+  return new Promise(res => {
+    const sc = document.createElement("script"); sc.src = src; sc.onload = () => res(true); sc.onerror = () => res(false);
+    document.head.appendChild(sc); setTimeout(() => res(false), ms);
+  });
+}
+async function maxBoot(){
+  await loadScript("https://st.max.ru/js/max-web-app.js", 4000);
+  MX = window.WebApp || null;
+  try { MX && MX.ready && MX.ready(); } catch (e) {}
+  try { MX && MX.BackButton && MX.BackButton.onClick(back); } catch (e) {}
+  const r = await fetch(`menu.json?x=${Date.now()}`, {cache:"no-store"});
+  const d = await r.json();
+  let me = {};
+  try { // личное: бонусы, подарок от друга, текущий заказ — бот кладёт в параметр запуска
+    const sp = (MX && MX.initDataUnsafe && (MX.initDataUnsafe.start_param || MX.initDataUnsafe.startParam)) || "";
+    if (sp) {
+      me = JSON.parse(atob(sp.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((sp.length + 3) % 4)));
+      if (Array.isArray(me.o)) { const y = new Date().getFullYear();
+        me.o = {id:me.o[0], st:me.o[1], m:me.o[2], eta:me.o[3] ? `${y}-${me.o[3]}` : null, at:`${y}-${me.o[4]}`}; }
+      if (me.r && d.bot) me.ref = `https://max.ru/${d.bot}?start=r${me.r}`;
+    }
+  } catch (e) { me = {}; }
+  d.me = me;
+  return d;
+}
+/* заказ из MAX: корзина и выбор (доставка, промокод, бонусы, чаевые) уходят боту ссылкой с параметром start,
+   адрес, время и телефон бот спросит в чате */
+function maxSubmit(){
+  const d = {m: S.method === "pickup" ? "p" : "d",
+    i: lines().map(l => l.add.length ? [l.p.id, l.q, l.add.map(a => a.id)] : [l.p.id, l.q])};
+  if (S.promo) d.p = S.promo.code;
+  if (S.useBonus) d.b = 1;
+  if (S.method === "delivery" && S.tip) d.t = S.tip;
+  const raw = new TextEncoder().encode(JSON.stringify(d));
+  let bin = ""; raw.forEach(b => bin += String.fromCharCode(b));
+  const code = "c" + btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const url = `https://max.ru/${S.bot}?start=${code}`;
+  try { if (MX && MX.openMaxLink) MX.openMaxLink(url); else window.open(url, "_blank"); }
+  catch (e) { window.open(url, "_blank"); }
+  S.cart = {}; saveCart();
+  setTimeout(() => { try { MX && MX.close && MX.close(); } catch (e) {} }, 400);
+}
+
 async function boot(){
   if (tg) {
     tg.ready(); tg.expand();
@@ -1130,11 +1189,12 @@ async function boot(){
   loadCart();
   if (STATIC) {
     try {
-      const d = await unpack(PACKED), c = await cloudGet();
+      const d = MAXMODE ? await maxBoot() : await unpack(PACKED), c = await cloudGet();
+      S.bot = d.bot || "";
       const hr = new Date().getHours();
       d.shop.open = hr >= d.shop.open_hour && hr < d.shop.close_hour; // по текущему времени, а не на момент ссылки
       let last = []; try { last = JSON.parse(c.last || "[]"); } catch (e) {}
-      const u = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || {};
+      const u = (inTG && tg.initDataUnsafe && tg.initDataUnsafe.user) || (MX && MX.initDataUnsafe && MX.initDataUnsafe.user) || {};
       for (const p of d.products) { // фото и видео лежат рядом со страницей: img/<номер>.jpg / .mp4 / _hd.mp4
         if (p.img) p.photo = `img/${p.id}.jpg?v=${p.img}`;
         if (p.vid) p.video = `img/${p.id}.mp4?v=${p.vid}`;
