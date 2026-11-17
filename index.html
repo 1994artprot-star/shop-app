@@ -8,8 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Unbounded:wght@500;600;700&display=swap" media="print" onload="this.media='all'">
-<script>/* скрипт Telegram нужен только в Telegram: в MAX он не нужен и может долго грузиться */
-if (!/[?&]max=1/.test(location.search)) document.write('<script src="https://telegram.org/js/telegram-web-app.js"><\/script>');</script>
+<script>/* Telegram открывает витрину со ссылкой ?d=… (каталог в ссылке). Без неё на GitHub Pages — это MAX:
+   скрипт Telegram там не нужен и может долго грузиться */
+window.__MAXPAGE = /[?&]max=1/.test(location.search) || (location.hostname.endsWith("github.io") && !/[?&]d=/.test(location.search));
+if (!window.__MAXPAGE) document.write('<script src="https://telegram.org/js/telegram-web-app.js"><\/script>');</script>
 <style>
 :root{
   --bg:var(--tg-theme-secondary-bg-color,#f2f2f7);
@@ -398,7 +400,7 @@ const tg = window.Telegram && window.Telegram.WebApp;
 const inTG = !!(tg && (tg.initData || (tg.platform && tg.platform !== "unknown")));
 // Режим GitHub Pages: каталог пришёл прямо в ссылке (?d=...), заказ уходит в чат бота через sendData.
 const PACKED = new URLSearchParams(location.search).get("d");
-const MAXMODE = new URLSearchParams(location.search).get("max") === "1" && !inTG; // витрина открыта в MAX
+const MAXMODE = !!window.__MAXPAGE && !inTG; // витрина открыта в MAX
 const STATIC = !!PACKED || MAXMODE;
 let MX = null; // объект WebApp мессенджера MAX
 const $ = s => document.querySelector(s);
